@@ -3,7 +3,6 @@
 " Version:     0.01
 
 
-
 if exists('g:scrappy_dir') ==# 0
   let g:scrappy_dir = '~/.scrappy/'
 endif
@@ -15,42 +14,59 @@ endif
 
 
 function! GetDirPath()
+  " create and return the scrappy directory
   call system('mkdir -p ' . g:scrappy_dir)
-  return dirpath
+  return expand(g:scrappy_dir)
 endfunction
 
 
 function! GetRandomScriptPath(ext = g:scrappy_default_ext)
+  " returns a randomly named full pathed script
   let randnum = system('echo $RANDOM | tr -d "\n"')
   return GetDirPath() . randnum . "." . a:ext
 endfunction
 
 
-function! GetScriptPath(scriptname)
-  return GetDirPath() . a:scriptname
+function! GetScratchPad(ext = g:scrappy_default_ext)
+  " open a scratchpad, delete if already exists
+  let scratchpad = GetDirPath() . "scratchpad" . "." . a:ext
+  if filereadable(scratchpad)
+    call delete(scratchpad)
+  endif
+  return scratchpad
 endfunction
 
 
-function! OpenScript(scriptname = 0)
-  if a:scriptname == 0
-    let scriptname = GetRandomScriptPath()
-  else
-    let scriptname = GetScriptPath(a:scriptname)
+function! GetScriptPath(scriptname)
+  " return the full path for the scriptname
+  let dirpath = GetDirPath()
+  if a:scriptname =~# dirpath
+    return a:scriptname
   endif
+  return dirpath . a:scriptname
+endfunction
+
+
+function! OpenScript(...)
+  " open a script in the current buffer
+  let scriptname = a:1 == '' ? GetScratchPad() : GetScriptPath(a:1)
   execute "edit " . scriptname
 endfunction
 
 
-" command! -bang -nargs=* GrepScripts
-"   \ call fzf#vim#grep(
-"   \   'rg --type md --column --line-number --no-heading --color=always --smart-case -- '.shellescape(<q-args>), 1,
-"   \   fzf#vim#with_preview({'dir': '~/.scrappy/'}), <bang>0)
+function! GetScrappyFiles(...)
+  " returns list of files in scrappy dir that partially match given string
+  let searchterm = a:1 . "*"
+  return globpath(g:scrappy_dir, searchterm, 0, 1)
+endfunction
 
-" nnoremap <Leader>ns :GrepScripts<CR>
 
+command! -bang -nargs=* GrepScripts
+  \ call fzf#vim#grep(
+  \   'rg --column --line-number --no-heading --color=always --smart-case -- '.shellescape(<q-args>), 1,
+  \   fzf#vim#with_preview({'dir': g:scrappy_dir}), <bang>0)
+nnoremap <silent> <Plug>(grep_scripts) :GrepScripts<Return>
 
-" Command should:
-" 1. create a randomly named python script a directory called ~/.scrappy
-" 2. should have a command to rename randomly name script RenameScrappy <name>
-" 3. should have the option to name the scrappy file
-" 4. should be able to search the files using FZF
+command! -nargs=* -complete=customlist,GetScrappyFiles Scrappy :call OpenScript(<q-args>)
+nnoremap <silent> <Plug>(create_scratchpad) :Scrappy<Return>
+nnoremap <silent> <Plug>(create_scratchpad_vertical) :vsplit<Bar>Scrappy<Return>
