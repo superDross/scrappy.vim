@@ -34,6 +34,13 @@ Use FZF to find a specific file (must have fzf.vim installed):
 :GrepScripts
 ```
 
+Mappings can be set in your vimrc file too. For Example:
+
+```vim
+nnoremap <Leader>2 <Plug>(create_scratchpad)
+nnoremap <Leader>3 <Plug>(grep_scripts)
+```
+
 ## Configuration
 
 Configure the directory to store all scripts:
