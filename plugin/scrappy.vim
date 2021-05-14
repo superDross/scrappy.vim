@@ -13,7 +13,7 @@ if exists('g:scrappy_default_ext') ==# 0
 endif
 
 
-function! GetDirPath()
+function! GetScrappyDirPath()
   " create and return the scrappy directory
   call system('mkdir -p ' . g:scrappy_dir)
   return expand(g:scrappy_dir)
@@ -23,13 +23,13 @@ endfunction
 function! GetRandomScriptPath(ext = g:scrappy_default_ext)
   " returns a randomly named full pathed script
   let randnum = system('echo $RANDOM | tr -d "\n"')
-  return GetDirPath() . randnum . "." . a:ext
+  return GetScrappyDirPath() . randnum . "." . a:ext
 endfunction
 
 
 function! GetScratchPad(ext = g:scrappy_default_ext)
   " open a scratchpad, delete if already exists
-  let scratchpad = GetDirPath() . "scratchpad" . "." . a:ext
+  let scratchpad = GetScrappyDirPath() . "scratchpad" . "." . a:ext
   if filereadable(scratchpad)
     call delete(scratchpad)
   endif
@@ -39,7 +39,7 @@ endfunction
 
 function! GetScriptPath(scriptname)
   " return the full path for the scriptname
-  let dirpath = GetDirPath()
+  let dirpath = GetScrappyDirPath()
   if a:scriptname =~# dirpath
     return a:scriptname
   endif
