@@ -67,6 +67,10 @@ command! -bang -nargs=* GrepScripts
   \   fzf#vim#with_preview({'dir': g:scrappy_dir}), <bang>0)
 nnoremap <silent> <Plug>(grep_scripts) :GrepScripts<Return>
 
+command! -bang -nargs=* FindScripts
+      \ call fzf#vim#files(g:scrappy_dir, {'options': ['--preview', '~/.vim/plugged/fzf.vim/bin/preview.sh {}']})
+nnoremap <silent> <Plug>(find_scripts) :FindScripts<Return>
+
 command! -nargs=* -complete=customlist,GetScrappyFiles Scrappy :call OpenScript(<q-args>)
 nnoremap <silent> <Plug>(create_scratchpad) :Scrappy<Return>
 nnoremap <silent> <Plug>(create_scratchpad_vertical) :vsplit<Bar>Scrappy<Return>
