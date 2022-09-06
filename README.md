@@ -61,3 +61,9 @@ Configure the default extension for the scratchpad file:
 ```vim
 let g:scrappy_default_ext = 'py'
 ```
+
+Use FZF by default for all grep based commands:
+
+```vim
+let g:scrappy_use_fzf_default = 1
+```

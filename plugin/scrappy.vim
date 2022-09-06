@@ -61,16 +61,20 @@ function! GetScrappyFiles(...)
 endfunction
 
 
-command! -bang -nargs=* GrepScripts
-  \ call fzf#vim#grep(
-  \   'rg --column --line-number --no-heading --color=always --smart-case -- '.shellescape(<q-args>), 1,
-  \   fzf#vim#with_preview({'dir': g:scrappy_dir}), <bang>0)
-nnoremap <silent> <Plug>(grep_scripts) :GrepScripts<Return>
+if get(g:, 'scrappy_use_fzf_default', 0)
+  command! -nargs=* GrepScripts :call scrappy#grep#GrepScriptsFzf(<q-args>)
+else
+  command! -nargs=1 GrepScripts :call scrappy#grep#GrepScripts(<f-args>)
+endif
 
+command! -nargs=* GrepScriptsFzf :call scrappy#grep#GrepScriptsFzf(<q-args>)
+command! -nargs=* -complete=customlist,GetScrappyFiles Scrappy :call OpenScript(<q-args>)
 command! -bang -nargs=* FindScripts
       \ call fzf#vim#files(g:scrappy_dir, {'options': ['--preview', '~/.vim/plugged/fzf.vim/bin/preview.sh {}']})
-nnoremap <silent> <Plug>(find_scripts) :FindScripts<Return>
 
-command! -nargs=* -complete=customlist,GetScrappyFiles Scrappy :call OpenScript(<q-args>)
+
+nnoremap <silent> <Plug>(grep_scripts) :GrepScripts<Return>
+nnoremap <silent> <Plug>(grep_scripts_fzf) :GrepScriptsFzf<Return>
 nnoremap <silent> <Plug>(create_scratchpad) :Scrappy<Return>
 nnoremap <silent> <Plug>(create_scratchpad_vertical) :vsplit<Bar>Scrappy<Return>
+nnoremap <silent> <Plug>(find_scripts) :FindScripts<Return>
