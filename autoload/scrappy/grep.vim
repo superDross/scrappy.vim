@@ -14,10 +14,12 @@ endfunction
 function! scrappy#grep#GrepScriptsFzfLua(args = '')
   " interactiely search scripts contents using fzf-lua
   if scrappy#utils#IsInstalled('fzf-lua')
-    lua require('fzf-lua').grep({
+    lua require('fzf-lua').live_grep_native({
+      \ prompt = 'Grep Scripts > ',
+      \ previewer='bat',
       \ rg_glob=true,
       \ cwd = vim.g.scrappy_dir,
-      \ search=vim.fn.eval('a:args'),
+      \ rg_opts = '--column --line-number --no-heading --color=always --smart-case --',
       \ no_esc=true
     \ })
     return
